@@ -1,0 +1,9 @@
+const String rootPageRoute = '/';
+const String addRequestPageRoute = '/AddRequestPage';
+const String historyPageRoute = '/HistoryPage';
+const String collectionsPageRoute = '/CollectionsPage';
+const String homePageRoute = '/HomePage';
+const String settingsPageRoute = '/SettingsPage';
+const String editRequestPageRoute = '/EditRequestPage';
+const String signinPageRoute = '/SigninPage';
+const String loginPageRoute = '/LoginPage';
