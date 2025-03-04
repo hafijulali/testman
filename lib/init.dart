@@ -34,7 +34,7 @@ TextEditingController searchTextController = TextEditingController();
 TextEditingController apiKeyTextController = TextEditingController();
 
 ApiClient apiClient = ApiClient();
-
+bool showSubtitle = settingsDatabase?.get(showSubtitleKey, defaultValue: true);
 int currentPageIndex =
     settingsDatabase?.get(landingPageSettingsKey, defaultValue: 0);
 String currentPath = homePageRoute;

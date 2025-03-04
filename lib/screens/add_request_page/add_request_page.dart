@@ -30,15 +30,6 @@ class _AddRequestPageState extends State<AddRequestPage> {
   Box<Request>? database = historyDatabase;
   int? get index => widget.index;
 
-  Widget addForm(BuildContext context) {
-    return Scaffold(
-      body: Padding(
-        padding: const EdgeInsets.all(16),
-        child: ListView(children: _formElements(context)),
-      ),
-    );
-  }
-
   void addRequest() async {
     try {
       if (_formKey.currentState!.validate()) {
@@ -57,6 +48,7 @@ class _AddRequestPageState extends State<AddRequestPage> {
         );
 
         dynamic response = await apiClient.request(request);
+        request.response = response.toString();
 
         setState(() {
           responseController.text = response.toString();
@@ -70,6 +62,15 @@ class _AddRequestPageState extends State<AddRequestPage> {
     } catch (e) {
       print('Unexpected error occured please try after sometime $e');
     }
+  }
+
+  Widget addForm(BuildContext context) {
+    return Scaffold(
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: ListView(children: _formElements(context)),
+      ),
+    );
   }
 
   @override
@@ -105,12 +106,12 @@ class _AddRequestPageState extends State<AddRequestPage> {
 
   @override
   void initState() {
+    if (currentPath == collectionsPageRoute) {
+      database = collectionsDatabase!;
+    }
     if (index != null) {
       isEditMode = true;
-      if (currentPath == collectionsPageRoute) {
-        database = collectionsDatabase!;
-      }
-
+      _loadFormData(database!, index!);
       isFormDirty = true;
     }
     super.initState();
@@ -118,10 +119,6 @@ class _AddRequestPageState extends State<AddRequestPage> {
 
   Widget _add(BuildContext context, String text) {
     return ElevatedButton(onPressed: addRequest, child: Text(text));
-  }
-
-  TextFormField _authField() {
-    return _textField('Basic Auth', authController);
   }
 
   ElevatedButton _cancel(BuildContext context) {
@@ -188,14 +185,6 @@ class _AddRequestPageState extends State<AddRequestPage> {
     ];
   }
 
-  TextFormField _methodField() {
-    return _textField('Method', methodController);
-  }
-
-  TextFormField _pathField() {
-    return _textField('Path', pathController);
-  }
-
   TextFormField _textField(
       String labelText, TextEditingController textController) {
     return TextFormField(
@@ -212,5 +201,26 @@ class _AddRequestPageState extends State<AddRequestPage> {
 
   TextFormField _titleField() {
     return _textField('Title', titleController);
+  }
+
+  TextFormField _pathField() {
+    return _textField('Path', pathController);
+  }
+
+  TextFormField _methodField() {
+    return _textField('Method', methodController);
+  }
+
+  TextFormField _authField() {
+    return _textField('Basic Auth', authController);
+  }
+
+  void _loadFormData(Box<Request> database, int index) {
+    Request request = database.getAt(index)!;
+    titleController.text = request.title;
+    methodController.text = request.method;
+    pathController.text = request.path;
+    authController.text = request.auth.values.last.split(' ')[1];
+    if (request.response != null) responseController.text = request.response!;
   }
 }

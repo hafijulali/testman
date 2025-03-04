@@ -24,11 +24,25 @@ class _SettingsPageState extends State<SettingsPage> {
       value: useMaterial3,
       onChanged: (bool value) {
         setState(() {
-          settingsDatabase!.put(material3SettingsKey, value);
           useMaterial3 = value;
+          settingsDatabase!.put(material3SettingsKey, value);
         });
       },
       secondary: const Icon(Icons.design_services_outlined),
+    );
+  }
+
+  SwitchListTile _showSubtitle(BuildContext context) {
+    return SwitchListTile(
+      title: const Text('Show subtitle in list items'),
+      value: showSubtitle,
+      onChanged: (bool value) {
+        setState(() {
+          showSubtitle = value;
+          settingsDatabase!.put(showSubtitleKey, value);
+        });
+      },
+      secondary: const Icon(Icons.subtitles_outlined),
     );
   }
 
@@ -37,6 +51,8 @@ class _SettingsPageState extends State<SettingsPage> {
       appTheme(context),
       const SizedBox(height: 16),
       _useMaterial3(context),
+      const SizedBox(height: 16),
+      _showSubtitle(context),
       const SizedBox(height: 16),
       exportDatabase(context),
       const SizedBox(height: 16),

@@ -11,6 +11,7 @@ class Request {
     required this.body,
     required this.headers,
     required this.auth,
+    this.response,
   });
 
   @HiveField(0)
@@ -31,13 +32,17 @@ class Request {
   @HiveField(5)
   Map<String, String> auth;
 
+  @HiveField(6)
+  String? response;
+
   Request.fromJson(Map<String, dynamic> json)
       : title = json['title'],
         method = json['method'],
         path = json['path'],
         body = json['body'],
         headers = json['headers'],
-        auth = json['auth'];
+        auth = json['auth'],
+        response = json['response'];
 
   Map<String, dynamic> toJson() {
     return {
@@ -47,6 +52,7 @@ class Request {
       'body': body,
       'headers': headers,
       'auth': auth,
+      'response': response
     };
   }
 }

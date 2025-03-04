@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:hive_ce_flutter/hive_flutter.dart';
 
 import '../../core/constants/routes.dart';
+import '../../core/constants/settings.dart';
 import '../../core/constants/strings.dart';
 import '../../init.dart';
 import '../../screens/add_request_page/add_request_page.dart';
@@ -54,7 +55,8 @@ IconButton _editButton(BuildContext context, int index) {
   return IconButton(
     onPressed: () async {
       currentPath = editRequestPageRoute;
-      Navigator.push(
+      print("Clicked on $index");
+      await Navigator.push(
           context,
           MaterialPageRoute(
             builder: (context) => Scaffold(
@@ -82,12 +84,12 @@ Widget _item(
   int index,
 ) {
   final String titleText =
-      '${request!.title}  ${request.path}  ${request.method}';
+      '${request!.title} /${request.method} : ${request.path}';
   return ListTile(
     leading: _leadingButton(request.title, index),
     title: _title(titleText),
-    subtitle: _subtitle(request.path),
-    isThreeLine: true,
+    subtitle: showSubtitle ? _subtitle(request.path) : null,
+    isThreeLine: showSubtitle,
     trailing: Wrap(spacing: 5, children: <IconButton>[
       _editButton(context, index),
       _copyButton(request.title, request.path),
@@ -95,6 +97,10 @@ Widget _item(
           ? _undoButton(request, index)
           : _doneButton(request, index),
     ]),
+    onTap: () {
+      showSubtitle = !showSubtitle;
+      settingsDatabase?.put(showSubtitleKey, showSubtitle);
+    },
   );
 }
 
