@@ -4,3 +4,4 @@ const String collectionsDatabaseFileName = 'collections';
 const String settingsDatabaseFileName = 'settings';
 const String secureDatabaseFileName = 'secure';
 const double settingsTileWidgetWidth = 150;
+const List<String> requestMethods = <String>['GET', 'POST', 'PUT', 'DELETE'];

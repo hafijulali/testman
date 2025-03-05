@@ -52,8 +52,10 @@ class _SettingsPageState extends State<SettingsPage> {
       const SizedBox(height: 16),
       _useMaterial3(context),
       const SizedBox(height: 16),
-      _showSubtitle(context),
-      const SizedBox(height: 16),
+      // INFO : Removing the feature since, the subtitle is revieled
+      // by tapping on the list item
+      //_showSubtitle(context),
+      // const SizedBox(height: 16),
       exportDatabase(context),
       const SizedBox(height: 16),
       importDatabase(context),

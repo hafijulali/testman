@@ -16,6 +16,7 @@ const String connectedToCloud = 'Connected to cloud';
 const String writePermissionDenied = 'Permission denied to write storage';
 const String none = 'NONE';
 const String ok = 'OK';
+const String update = 'UPDATE';
 const String cancel = 'CANCEL';
 const String send = 'SEND';
 const String undo = 'UNDO';

@@ -12,10 +12,13 @@ import '../navigation/navigate.dart';
 import '../widgets/app_bar.dart';
 import '../widgets/nav_bar.dart';
 
+int listItemOnTapIndex = -1;
+
 StreamBuilder<BoxEvent> listBuilder(
   BuildContext context,
   Box<Request>? data,
 ) {
+  listItemOnTapIndex = -1;
   return StreamBuilder<BoxEvent>(
     stream: settingsDatabase!.watch(),
     builder: (BuildContext context, AsyncSnapshot<BoxEvent> snapshot) {
@@ -55,7 +58,6 @@ IconButton _editButton(BuildContext context, int index) {
   return IconButton(
     onPressed: () async {
       currentPath = editRequestPageRoute;
-      print("Clicked on $index");
       await Navigator.push(
           context,
           MaterialPageRoute(
@@ -88,8 +90,10 @@ Widget _item(
   return ListTile(
     leading: _leadingButton(request.title, index),
     title: _title(titleText),
-    subtitle: showSubtitle ? _subtitle(request.path) : null,
-    isThreeLine: showSubtitle,
+    subtitle: index == listItemOnTapIndex
+        ? _subtitle('$responseText : ${request.response}')
+        : null,
+    isThreeLine: index == listItemOnTapIndex,
     trailing: Wrap(spacing: 5, children: <IconButton>[
       _editButton(context, index),
       _copyButton(request.title, request.path),
@@ -98,10 +102,18 @@ Widget _item(
           : _doneButton(request, index),
     ]),
     onTap: () {
+      listItemOnTapIndex = index;
       showSubtitle = !showSubtitle;
       settingsDatabase?.put(showSubtitleKey, showSubtitle);
     },
   );
+}
+
+bool _showSubtitle(index) {
+  if (showSubtitle)
+    return true;
+  else if (listItemOnTapIndex == index) return true;
+  return false;
 }
 
 IconButton _leadingButton(String title, int index) {

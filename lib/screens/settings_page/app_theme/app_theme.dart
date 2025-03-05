@@ -10,16 +10,16 @@ List<DropdownMenuEntry> _dropdownMenuEntries() {
     'Light Theme',
     'Dark Theme'
   ];
-  final List<DropdownMenuEntry> fontMenuItem = List.empty(growable: true);
+  final List<DropdownMenuEntry> menuItems = List.empty(growable: true);
   for (final String element in themes) {
-    fontMenuItem.add(
+    menuItems.add(
       DropdownMenuEntry(
         value: element,
         label: element,
       ),
     );
   }
-  return fontMenuItem;
+  return menuItems;
 }
 
 ListTile appTheme(BuildContext context) {

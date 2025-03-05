@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:hive_ce/hive.dart';
 
+import '../../core/constants/app.dart';
 import '/init.dart';
 import '../../core/constants/routes.dart';
 import '../../core/constants/strings.dart';
@@ -26,6 +28,7 @@ class _AddRequestPageState extends State<AddRequestPage> {
 
   bool isEditMode = false;
   bool isFormDirty = false;
+  bool isSaveToCollection = false;
 
   Box<Request>? database = historyDatabase;
   int? get index => widget.index;
@@ -57,6 +60,13 @@ class _AddRequestPageState extends State<AddRequestPage> {
           await database!.putAt(index!, request);
         } else {
           await database?.add(request);
+        }
+
+        if (isSaveToCollection == true) {
+          // INFO : Since, we don't want to preseve the response in Collections database
+          request.response = null;
+
+          await collectionsDatabase?.add(request);
         }
       }
     } catch (e) {
@@ -174,11 +184,17 @@ class _AddRequestPageState extends State<AddRequestPage> {
     return <Widget>[
       _titleField(),
       const SizedBox(height: 16),
-      _methodField(),
-      const SizedBox(height: 16),
-      _pathField(),
+      Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _methodField(),
+          _pathField(),
+        ],
+      ),
       const SizedBox(height: 16),
       _authField(),
+      const SizedBox(height: 16),
+      _saveToCollectionSwitch(),
       const SizedBox(height: 16),
       _contentField(),
       const SizedBox(height: 16),
@@ -189,9 +205,11 @@ class _AddRequestPageState extends State<AddRequestPage> {
       String labelText, TextEditingController textController) {
     return TextFormField(
       decoration: InputDecoration(
-        labelText: labelText,
-        border: OutlineInputBorder(),
-      ),
+          labelText: labelText,
+          border: OutlineInputBorder(),
+          constraints: (labelText == 'Path')
+              ? BoxConstraints.tightFor(width: settingsTileWidgetWidth * 1.75)
+              : null),
       textCapitalization: TextCapitalization.sentences,
       controller: textController,
       validator: (String? text) =>
@@ -207,8 +225,30 @@ class _AddRequestPageState extends State<AddRequestPage> {
     return _textField('Path', pathController);
   }
 
-  TextFormField _methodField() {
-    return _textField('Method', methodController);
+  SizedBox _methodField() {
+    return SizedBox(
+      width: settingsTileWidgetWidth * 0.75,
+      child: DropdownMenu<dynamic>(
+        hintText: 'GET',
+        dropdownMenuEntries: _dropdownMenuEntries(),
+        onSelected: (value) {
+          methodController.text = value;
+        },
+      ),
+    );
+  }
+
+  List<DropdownMenuEntry> _dropdownMenuEntries() {
+    final List<DropdownMenuEntry> menuItems = List.empty(growable: true);
+    for (final String element in requestMethods) {
+      menuItems.add(
+        DropdownMenuEntry(
+          value: element,
+          label: element,
+        ),
+      );
+    }
+    return menuItems;
   }
 
   TextFormField _authField() {
@@ -222,5 +262,18 @@ class _AddRequestPageState extends State<AddRequestPage> {
     pathController.text = request.path;
     authController.text = request.auth.values.last.split(' ')[1];
     if (request.response != null) responseController.text = request.response!;
+  }
+
+  SwitchListTile _saveToCollectionSwitch() {
+    return SwitchListTile(
+      title: const Text('Save this to collections'),
+      value: isSaveToCollection,
+      onChanged: (bool value) {
+        setState(() {
+          isSaveToCollection = value;
+        });
+      },
+      secondary: const Icon(Icons.save_as_outlined),
+    );
   }
 }
