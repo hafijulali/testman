@@ -52,7 +52,8 @@ Map<String, WidgetBuilder> routes = <String, WidgetBuilder>{
   collectionsPageRoute: (_) => const CollectionsPage(),
   homePageRoute: (_) => const HomePage(),
   settingsPageRoute: (_) => const SettingsPage(),
-  editRequestPageRoute: (_) => const AddRequestPage(
+  editRequestPageRoute: (_) => AddRequestPage(
+        database: historyDatabase,
         index:
             0, // INFO : setting index to dummy value so that navigator for EditRequestPage works correctly
       ),

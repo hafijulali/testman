@@ -36,22 +36,28 @@ StreamBuilder<BoxEvent> listBuilder(
   );
 }
 
+Future<void> _navigateToEditRequest(
+    BuildContext context, Box<Request>? database, int index) async {
+  currentPath = editRequestPageRoute;
+  await Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          appBar: appBar(context),
+          body: AddRequestPage(
+            database: database,
+            index: index,
+          ),
+          bottomNavigationBar: navBar(1, (_) => safePop(context)),
+        ),
+      ));
+}
+
 IconButton _editButton(BuildContext context, int index) {
   return IconButton(
     tooltip: 'Edit',
     onPressed: () async {
-      currentPath = editRequestPageRoute;
-      await Navigator.push(
-          context,
-          MaterialPageRoute(
-            builder: (context) => Scaffold(
-              appBar: appBar(context),
-              body: AddRequestPage(
-                index: index,
-              ),
-              bottomNavigationBar: navBar(1, (_) => safePop(context)),
-            ),
-          ));
+      await _navigateToEditRequest(context, historyDatabase, index);
     },
     icon: const Icon(Icons.edit_outlined),
   );
@@ -79,7 +85,7 @@ Widget _item(
     isThreeLine: index == listItemOnTapIndex,
     trailing: Wrap(spacing: 5, children: <IconButton>[
       (currentPath == collectionsPageRoute)
-          ? _loadButton(request, index)
+          ? _loadButton(context, index)
           : _editButton(context, index),
     ]),
     onTap: () {
@@ -139,11 +145,11 @@ Text _title(String text) {
   );
 }
 
-IconButton _loadButton(Request request, int index) {
+IconButton _loadButton(BuildContext context, int index) {
   return IconButton(
     tooltip: 'Load Collection',
     onPressed: () async {
-      historyDatabase?.add(request);
+      await _navigateToEditRequest(context, collectionsDatabase, index);
     },
     icon: const Icon(Icons.file_open_outlined),
   );

@@ -13,7 +13,8 @@ import '../../storage/models/request_model.dart';
 
 class AddRequestPage extends StatefulWidget {
   final int? index;
-  const AddRequestPage({super.key, this.index});
+  final Box<Request>? database;
+  const AddRequestPage({super.key, this.index, this.database});
 
   @override
   _AddRequestPageState createState() => _AddRequestPageState();
@@ -33,10 +34,11 @@ class _AddRequestPageState extends State<AddRequestPage> {
   bool isFormDirty = false;
   bool isSaveToCollection = false;
 
-  Box<Request>? database = historyDatabase;
+  Box<Request>? get database => widget.database;
   int? get index => widget.index;
 
   void addRequest() async {
+    dynamic request;
     try {
       if (_formKey.currentState!.validate()) {
         final String title = titleController.text;
@@ -45,14 +47,18 @@ class _AddRequestPageState extends State<AddRequestPage> {
         final String auth = authController.text;
         final String body = bodyController.text;
 
-        final Request request = Request(
+        request = Request(
           title: title,
           method: method.toUpperCase(),
           path: path,
-          body: jsonDecode(body),
+          body: body != '' ? jsonDecode(body) : {'': ''},
           headers: {"Content-Type": "application/json"},
           auth: {"Authorization": "Basic $auth"},
         );
+        if (isSaveToCollection == true) {
+          // INFO : Since, we don't want to preseve the response in Collections database
+          await collectionsDatabase?.add(request);
+        }
 
         dynamic response = await apiClient.request(request);
         request.response = response.toString();
@@ -60,11 +66,6 @@ class _AddRequestPageState extends State<AddRequestPage> {
         setState(() {
           responseController.text = response.toString();
         });
-        if (isEditMode == true && index != null) {
-          await database!.putAt(index!, request);
-        } else {
-          await database?.add(request);
-        }
 
         if (isSaveToCollection == true) {
           // INFO : Since, we don't want to preseve the response in Collections database
@@ -75,6 +76,12 @@ class _AddRequestPageState extends State<AddRequestPage> {
     } catch (e) {
       showAlertDialog(context, 'Error',
           'Unexpected error occured please try after sometime $e');
+    } finally {
+      if (isEditMode == true && index != null) {
+        await database!.putAt(index!, request);
+      } else {
+        await database?.add(request);
+      }
     }
   }
 
@@ -96,7 +103,8 @@ class _AddRequestPageState extends State<AddRequestPage> {
   void clearAllFields() {
     setState(() {
       titleController.text = methodController.text = pathController.text =
-          authController.text = responseController.text = '';
+          authController.text =
+              bodyController.text = responseController.text = '';
       isFormDirty = false;
     });
   }
@@ -120,9 +128,6 @@ class _AddRequestPageState extends State<AddRequestPage> {
 
   @override
   void initState() {
-    if (currentPath == collectionsPageRoute) {
-      database = collectionsDatabase!;
-    }
     if (index != null) {
       isEditMode = true;
       _loadFormData(database!, index!);
