@@ -1,7 +1,6 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
-import 'package:flutter/rendering.dart';
 import 'package:hive_ce/hive.dart';
 
 import '../../core/constants/app.dart';
@@ -74,8 +73,10 @@ class _AddRequestPageState extends State<AddRequestPage> {
         }
       }
     } catch (e) {
-      showAlertDialog(context, 'Error',
-          'Unexpected error occured please try after sometime $e');
+      if (!context.mounted) {
+        showAlertDialog(context, 'Error',
+            'Unexpected error occured please try after sometime $e');
+      }
     } finally {
       if (isEditMode == true && index != null) {
         await database!.putAt(index!, request);

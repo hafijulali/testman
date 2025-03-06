@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:testman/core/constants/app.dart';
+import 'package:testman/utils/build_utils.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../init.dart';
 import '../../core/constants/routes.dart';
@@ -52,7 +55,7 @@ class _SettingsPageState extends State<SettingsPage> {
       const SizedBox(height: 16),
       _useMaterial3(context),
       const SizedBox(height: 16),
-      // INFO : Removing the feature since, the subtitle is revieled
+      // INFO : Removing the feature since, the subtitle is revealed
       // by tapping on the list item
       //_showSubtitle(context),
       // const SizedBox(height: 16),
@@ -64,6 +67,7 @@ class _SettingsPageState extends State<SettingsPage> {
       const SizedBox(height: 16),
       changeFontSize(context),
       const SizedBox(height: 16),
+      _buildInfo(context)
     ];
   }
 
@@ -81,5 +85,13 @@ class _SettingsPageState extends State<SettingsPage> {
   Widget build(BuildContext context) {
     currentPath = settingsPageRoute;
     return settingsPage(context);
+  }
+
+  ListTile _buildInfo(BuildContext context) {
+    return ListTile(
+      leading: const Icon(Icons.mobile_friendly_outlined),
+      title: Text('App Version : ${getAppVersion()}'),
+      onTap: () async => await launchUrlString(appCodebase),
+    );
   }
 }

@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:hive_ce_flutter/adapters.dart';
+import 'package:package_info_plus/package_info_plus.dart';
 import 'package:permission_handler/permission_handler.dart';
 import 'services/network/apiclient.dart';
 import 'package:timezone/data/latest_all.dart' as tz_latest;
@@ -22,6 +23,7 @@ Box<Request>? historyDatabase;
 Box<Request>? collectionsDatabase;
 Box<dynamic>? settingsDatabase;
 PermissionStatus? permission;
+PackageInfo? packageInfo;
 String? historyDatabaseFilePath;
 String? collectionsDatabaseFilePath;
 String? settingsDatabaseFilePath;
@@ -76,7 +78,7 @@ Future<void> _initCloud() async {}
 Future<void> _initServices() async {
   WidgetsFlutterBinding.ensureInitialized();
   Hive.registerAdapter(RequestAdapter());
-
+  packageInfo = await PackageInfo.fromPlatform();
   if (!kIsWeb) {
     tz_latest.initializeTimeZones();
     tz.setLocalLocation(tz.getLocation('Asia/Kolkata'));
