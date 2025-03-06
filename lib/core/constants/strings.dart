@@ -2,6 +2,7 @@ const String failureMessage = 'Failure';
 const String successMessage = 'Success';
 const String responseText = 'Response';
 const String requestText = 'Request';
+const String body = 'Body';
 const String addRequest = 'Add Request';
 const String editRequest = 'Edit Request';
 const String history = 'History';

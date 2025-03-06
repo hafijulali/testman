@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:hive_ce/hive.dart';
@@ -22,6 +24,7 @@ class _AddRequestPageState extends State<AddRequestPage> {
 
   final TextEditingController titleController = TextEditingController();
   final TextEditingController methodController = TextEditingController();
+  final TextEditingController bodyController = TextEditingController();
   final TextEditingController pathController = TextEditingController();
   final TextEditingController authController = TextEditingController();
   final TextEditingController responseController = TextEditingController();
@@ -40,12 +43,13 @@ class _AddRequestPageState extends State<AddRequestPage> {
         final String method = methodController.text;
         final String path = pathController.text;
         final String auth = authController.text;
+        final String body = bodyController.text;
 
         final Request request = Request(
           title: title,
           method: method.toUpperCase(),
           path: path,
-          body: '',
+          body: jsonDecode(body),
           headers: {"Content-Type": "application/json"},
           auth: {"Authorization": "Basic $auth"},
         );
@@ -65,12 +69,12 @@ class _AddRequestPageState extends State<AddRequestPage> {
         if (isSaveToCollection == true) {
           // INFO : Since, we don't want to preseve the response in Collections database
           request.response = null;
-
           await collectionsDatabase?.add(request);
         }
       }
     } catch (e) {
-      print('Unexpected error occured please try after sometime $e');
+      showAlertDialog(context, 'Error',
+          'Unexpected error occured please try after sometime $e');
     }
   }
 
@@ -154,6 +158,18 @@ class _AddRequestPageState extends State<AddRequestPage> {
     );
   }
 
+  TextFormField _bodyField() {
+    return TextFormField(
+      decoration: const InputDecoration(
+        labelText: body,
+        border: OutlineInputBorder(),
+      ),
+      controller: bodyController,
+      keyboardType: TextInputType.multiline,
+      maxLines: 5,
+    );
+  }
+
   List<Widget> _formElements(BuildContext context) {
     return <Widget>[
       Form(
@@ -194,6 +210,8 @@ class _AddRequestPageState extends State<AddRequestPage> {
       const SizedBox(height: 16),
       _authField(),
       const SizedBox(height: 16),
+      _bodyField(),
+      const SizedBox(height: 16),
       _saveToCollectionSwitch(),
       const SizedBox(height: 16),
       _contentField(),
@@ -208,7 +226,8 @@ class _AddRequestPageState extends State<AddRequestPage> {
           labelText: labelText,
           border: OutlineInputBorder(),
           constraints: (labelText == 'Path')
-              ? BoxConstraints.tightFor(width: settingsTileWidgetWidth * 1.75)
+              ? BoxConstraints.tightFor(
+                  width: MediaQuery.of(context).size.width / 1.5)
               : null),
       textCapitalization: TextCapitalization.sentences,
       controller: textController,
@@ -232,7 +251,9 @@ class _AddRequestPageState extends State<AddRequestPage> {
         hintText: 'GET',
         dropdownMenuEntries: _dropdownMenuEntries(),
         onSelected: (value) {
-          methodController.text = value;
+          setState(() {
+            methodController.text = value;
+          });
         },
       ),
     );

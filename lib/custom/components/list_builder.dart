@@ -36,26 +36,9 @@ StreamBuilder<BoxEvent> listBuilder(
   );
 }
 
-IconButton _copyButton(String title, String content) {
-  return IconButton(
-    onPressed: () async {
-      await Clipboard.setData(ClipboardData(text: '$title\n$content'));
-    },
-    icon: const Icon(Icons.copy_outlined),
-  );
-}
-
-IconButton _doneButton(Request request, int index) {
-  return IconButton(
-    onPressed: () async {
-      historyDatabase?.deleteAt(index);
-    },
-    icon: const Icon(Icons.done_outlined),
-  );
-}
-
 IconButton _editButton(BuildContext context, int index) {
   return IconButton(
+    tooltip: 'Edit',
     onPressed: () async {
       currentPath = editRequestPageRoute;
       await Navigator.push(
@@ -95,11 +78,9 @@ Widget _item(
         : null,
     isThreeLine: index == listItemOnTapIndex,
     trailing: Wrap(spacing: 5, children: <IconButton>[
-      _editButton(context, index),
-      _copyButton(request.title, request.path),
       (currentPath == collectionsPageRoute)
-          ? _undoButton(request, index)
-          : _doneButton(request, index),
+          ? _loadButton(request, index)
+          : _editButton(context, index),
     ]),
     onTap: () {
       listItemOnTapIndex = index;
@@ -107,13 +88,6 @@ Widget _item(
       settingsDatabase?.put(showSubtitleKey, showSubtitle);
     },
   );
-}
-
-bool _showSubtitle(index) {
-  if (showSubtitle)
-    return true;
-  else if (listItemOnTapIndex == index) return true;
-  return false;
 }
 
 IconButton _leadingButton(String title, int index) {
@@ -165,11 +139,12 @@ Text _title(String text) {
   );
 }
 
-IconButton _undoButton(Request request, int index) {
+IconButton _loadButton(Request request, int index) {
   return IconButton(
+    tooltip: 'Load Collection',
     onPressed: () async {
       historyDatabase?.add(request);
     },
-    icon: const Icon(Icons.undo_outlined),
+    icon: const Icon(Icons.file_open_outlined),
   );
 }

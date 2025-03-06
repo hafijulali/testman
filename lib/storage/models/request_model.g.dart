@@ -20,16 +20,17 @@ class RequestAdapter extends TypeAdapter<Request> {
       title: fields[0] as String,
       method: fields[1] as String,
       path: fields[2] as String,
-      body: fields[3] as String,
+      body: (fields[3] as Map).cast<String, dynamic>(),
       headers: (fields[4] as Map).cast<String, String>(),
       auth: (fields[5] as Map).cast<String, String>(),
+      response: fields[6] as String?,
     );
   }
 
   @override
   void write(BinaryWriter writer, Request obj) {
     writer
-      ..writeByte(6)
+      ..writeByte(7)
       ..writeByte(0)
       ..write(obj.title)
       ..writeByte(1)
@@ -41,7 +42,9 @@ class RequestAdapter extends TypeAdapter<Request> {
       ..writeByte(4)
       ..write(obj.headers)
       ..writeByte(5)
-      ..write(obj.auth);
+      ..write(obj.auth)
+      ..writeByte(6)
+      ..write(obj.response);
   }
 
   @override

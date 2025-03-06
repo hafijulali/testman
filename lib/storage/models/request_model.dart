@@ -24,7 +24,7 @@ class Request {
   String path;
 
   @HiveField(3)
-  String body;
+  Map<String, dynamic> body;
 
   @HiveField(4)
   Map<String, String> headers;
