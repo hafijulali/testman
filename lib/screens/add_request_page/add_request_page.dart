@@ -37,14 +37,17 @@ class _AddRequestPageState extends State<AddRequestPage> {
   int? get index => widget.index;
 
   void addRequest() async {
-    dynamic request;
+    Request? request;
     try {
       if (_formKey.currentState!.validate()) {
-        final String title = titleController.text;
-        final String method = methodController.text;
-        final String path = pathController.text;
-        final String auth = authController.text;
-        final String body = bodyController.text;
+        String title = titleController.text;
+        String method = methodController.text;
+        String path = pathController.text;
+        String auth = authController.text;
+        String body = bodyController.text;
+        // INFO : Setting method to GET if its empty
+        // as a workaround for issue when state doesn't get updated properly
+        if (method.isEmpty) method = 'GET';
 
         request = Request(
           title: title,
@@ -61,16 +64,9 @@ class _AddRequestPageState extends State<AddRequestPage> {
 
         dynamic response = await apiClient.request(request);
         request.response = response.toString();
-
         setState(() {
           responseController.text = response.toString();
         });
-
-        if (isSaveToCollection == true) {
-          // INFO : Since, we don't want to preseve the response in Collections database
-          request.response = null;
-          await collectionsDatabase?.add(request);
-        }
       }
     } catch (e) {
       if (!context.mounted) {
@@ -79,9 +75,9 @@ class _AddRequestPageState extends State<AddRequestPage> {
       }
     } finally {
       if (isEditMode == true && index != null) {
-        await database!.putAt(index!, request);
+        await historyDatabase!.putAt(index!, request!);
       } else {
-        await database?.add(request);
+        await historyDatabase?.add(request!);
       }
     }
   }

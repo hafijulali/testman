@@ -1,4 +1,4 @@
-import 'package:testman/init.dart';
+import '../init.dart';
 
 String getAppVersion() {
   return packageInfo!.version;

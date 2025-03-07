@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
-import 'package:testman/core/constants/app.dart';
-import 'package:testman/utils/build_utils.dart';
 import 'package:url_launcher/url_launcher_string.dart';
 
 import '../../../init.dart';
+import '../../core/constants/app.dart';
 import '../../core/constants/routes.dart';
 import '../../core/constants/settings.dart';
 import '../../custom/widgets/app_bar.dart';
+import '../../utils/build_utils.dart';
 import 'app_theme/app_theme.dart';
 import 'export_database/export_database.dart';
 import 'font_size/font_size.dart';
