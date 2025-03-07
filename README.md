@@ -1,5 +1,8 @@
 # TestMan
 
+[![Latest Release](https://gitlab.com/hafijulali/testman/-/badges/release.svg)](https://gitlab.com/hafijulali/testman/-/releases)
+[![Pipeline Status](https://gitlab.com/hafijulali/testman/badges/master/pipeline.svg)](https://gitlab.com/hafijulali/testman/-/commits/master)
+
 A Free and OpenSource, multi-platform API testing app.
 
 ### Background
