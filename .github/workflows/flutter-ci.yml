@@ -20,9 +20,14 @@ jobs:
 
       - name: Setup Flutter
         uses: subosito/flutter-action@v2
+        id: flutter-action
         with:
+          architecture: x64
           flutter-version: stable
           cache: true
+      - run: |
+          git config --global --add safe.directory /opt/hostedtoolcache/flutter/${{ steps.flutter-action.outputs.CHANNEL }}-${{ steps.flutter-action.outputs.VERSION }}-${{ steps.flutter-action.outputs.ARCHITECTURE }}
+          flutter --version
 
       - name: Install Dependencies
         run: flutter pub get
