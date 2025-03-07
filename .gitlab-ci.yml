@@ -1,4 +1,14 @@
 image: ghcr.io/cirruslabs/flutter:latest
+
+variables:
+  FLUTTER_CHANNEL: "stable"
+
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .pub-cache/
+    - build/
+
 stages:
   - build
   - deploy
@@ -9,7 +19,7 @@ before_script:
   - flutter pub upgrade
 
 pages:
-  stage: deploy
+  stage: build
   script:
     - flutter build web --release --base-href /testman/
     - cp -r build/web public
@@ -20,9 +30,10 @@ pages:
       - public
   only:
     - master
+    - next
 
 android:
-  stage: deploy
+  stage: build
   script:
     - flutter build apk --release --obfuscate --split-per-abi --split-debug-info .debug
   artifacts:
@@ -34,3 +45,58 @@ android:
       - build/app/outputs/flutter-apk/app-x86_64-release.apk
   only:
     - master
+    - next
+ios:
+  stage: build
+  tags:
+    - macos
+  script:
+    - flutter build ios --release --no-codesign
+  artifacts:
+    paths:
+      - build/ios/
+    expire_in: 1 week
+  only:
+    - master
+    - next
+
+linux:
+  stage: build
+  script:
+    - sudo apt-get update -y && sudo apt-get install -y clang cmake ninja-build pkg-config libgtk-3-dev
+    - flutter config --enable-linux-desktop
+    - flutter build linux --release
+  artifacts:
+    paths:
+      - build/linux/
+  only:
+    - master
+    - next
+
+windows:
+  stage: build
+  tags:
+    - windows
+  script:
+    - flutter config --enable-windows-desktop
+    - flutter build windows --release
+  artifacts:
+    paths:
+      - build/windows/
+  only:
+    - master
+    - next
+
+macos:
+  stage: build
+  tags:
+    - macos
+  script:
+    - flutter config --enable-macos-desktop
+    - flutter build macos --release
+  artifacts:
+    paths:
+      - build/macos/
+  only:
+    - master
+    - next
